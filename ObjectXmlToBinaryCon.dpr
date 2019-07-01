@@ -8,8 +8,9 @@ uses
   System.SysUtils,
   uXmlLite.WinApi in 'src\uXmlLite.WinApi.pas',
   uObjectXmlConverter in 'src\uObjectXmlConverter.pas',
-  uSettings in 'src\uSettings.pas', System.Classes;
-
+  uSettings in 'src\uSettings.pas',
+  System.Classes,
+  uContext in 'src\uContext.pas';
 
 procedure Test;
 
@@ -64,12 +65,13 @@ begin
 //    LInput := TFileStream.Create(xmlFile, fmOpenRead);
     LInput := TStringStream.Create(xml, TEncoding.ANSI);
     try
+//      ObjectXmlToBinary(LInput, LOutput, TClassContext.Create(TSettings));
       ObjectXmlToBinary(LInput, LOutput);
     finally
       LInput.Free;
     end;
 
-    RegisterClass(TSettings);
+//    RegisterClass(TSettings);
 //    RegisterClass(TInitScript);
 //    RegisterClass(TStartedAskableParams);
 //    RegisterClass(TParams);
@@ -77,13 +79,13 @@ begin
 //    RegisterClass(TValueParamNames);
 
     LOutput.Position := 0;
-//    Writeln(ObjectBinaryToText(LOutput));
-    with TReader.Create(LOutput, 4096) do
-    try
-      LRoot := ReadRootComponent(nil) as TSettings;
-    finally
-      Free;
-    end;
+    Writeln(ObjectBinaryToText(LOutput));
+//    with TReader.Create(LOutput, 4096) do
+//    try
+//      LRoot := ReadRootComponent(nil) as TSettings;
+//    finally
+//      Free;
+//    end;
     Readln;
   finally
     LOutput.Free;
