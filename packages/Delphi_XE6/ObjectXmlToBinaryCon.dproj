@@ -94,9 +94,10 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="src\uXmlLite.WinApi.pas"/>
-        <DCCReference Include="src\uObjectXmlConverter.pas"/>
-        <DCCReference Include="src\uSettings.pas"/>
+        <DCCReference Include="..\..\src\uXmlLite.WinApi.pas"/>
+        <DCCReference Include="..\..\src\uObjectXmlConverter.pas"/>
+        <DCCReference Include="..\..\src\uSettings.pas"/>
+        <DCCReference Include="..\..\src\uMain.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

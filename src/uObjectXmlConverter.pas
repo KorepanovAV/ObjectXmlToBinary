@@ -78,7 +78,7 @@ var
     LWriter.WriteUTF8Str(LObjectName);
   end;
 
-  procedure ConvertNode(const AFlags: TFilerFlags); forward;
+  procedure ConvertNode(const AFlags: TFilerFlags; out AIsEndElement: Boolean); forward;
 
 var
   LPropertiesPosition: Integer;
@@ -86,6 +86,7 @@ var
   procedure ConvertObject(const AFlags: TFilerFlags);
   var
     LIsEmptyElement: Boolean;
+    LIsEndElement: Boolean;
   begin
     LIsEmptyElement := LReader.IsEmptyElement;
 
@@ -99,7 +100,9 @@ var
     LWriter.WriteListEnd;
 
     if not LIsEmptyElement then
-      ConvertNode([]);
+      repeat
+        ConvertNode([], LIsEndElement);
+      until LIsEndElement;
 
     LWriter.WriteListEnd;
   end;
@@ -126,35 +129,35 @@ var
     end;
   end;
 
-  procedure ConvertNode(const AFlags: TFilerFlags);
+  procedure ConvertNode(const AFlags: TFilerFlags; out AIsEndElement: Boolean);
   begin
-    while not LReader.IsEOF do
-    begin
-      OleCheck(LReader.Read(LNodeType));
-      case LNodeType of
-        XmlNodeType.None: ;
-        XmlNodeType.Element:
-          ConvertObject(AFlags);
-        XmlNodeType.Attribute: ;
-        XmlNodeType.Text: ;
-        XmlNodeType.CDATA:
-        begin
-          LWriter.Position := LPropertiesPosition;
-          WriteBinaryProperty('CData');
-          LPropertiesPosition := LWriter.Position;
-          LWriter.WriteListEnd;
-        end;
-        XmlNodeType.ProcessingInstruction: ;
-        XmlNodeType.Comment: ;
-        XmlNodeType.DocumentType: ;
-        XmlNodeType.Whitespace: ;
-        XmlNodeType.EndElement:
-          LWriter.WriteListEnd;
-        XmlNodeType.XmlDeclaration: ;
+    AIsEndElement := False;
+    OleCheck(LReader.Read(LNodeType));
+    case LNodeType of
+      XmlNodeType.None: ;
+      XmlNodeType.Element:
+        ConvertObject(AFlags);
+      XmlNodeType.Attribute: ;
+      XmlNodeType.Text: ;
+      XmlNodeType.CDATA:
+      begin
+        LWriter.Position := LPropertiesPosition;
+        WriteBinaryProperty('CData');
+        LPropertiesPosition := LWriter.Position;
+        LWriter.WriteListEnd;
       end;
+      XmlNodeType.ProcessingInstruction: ;
+      XmlNodeType.Comment: ;
+      XmlNodeType.DocumentType: ;
+      XmlNodeType.Whitespace: ;
+      XmlNodeType.EndElement:
+        AIsEndElement := True;
+      XmlNodeType.XmlDeclaration: ;
     end;
   end;
 
+var
+  LIsEndElement: Boolean;
 begin
   OleCheck(CreateXmlReader(XMLReaderGuid, LReader, nil));
   OleCheck(CreateXmlReaderInputWithEncodingCodePage(TStreamAdapter.Create(AInput) as IStream, nil, TEncoding.ANSI.CodePage, True, nil, LInput));
@@ -163,7 +166,8 @@ begin
   LWriter := TWriter.Create(AOutput, 4096);
   try
     LWriter.WriteSignature;
-    ConvertNode({[ffInherited]}[]);
+    while not LReader.IsEOF do
+      ConvertNode({[ffInherited]}[], LIsEndElement);
   finally
     LWriter.Free;
   end;

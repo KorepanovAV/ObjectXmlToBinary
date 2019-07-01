@@ -1,15 +1,16 @@
-program ObjectXmlToBinaryCon;
+unit uMain;
 
-{$APPTYPE CONSOLE}
+interface
 
-{$R *.res}
+procedure Test;
+
+implementation
 
 uses
+  System.Classes,
+  uSettings,
   System.SysUtils,
-  uXmlLite.WinApi in 'src\uXmlLite.WinApi.pas',
-  uObjectXmlConverter in 'src\uObjectXmlConverter.pas',
-  uSettings in 'src\uSettings.pas', System.Classes;
-
+  uObjectXmlConverter;
 
 procedure Test;
 
@@ -43,15 +44,15 @@ const
 '    <Property Name="Attachments" Type="28">' + sLineBreak +
 '      <ValueParamNames/>' + sLineBreak +
 '    </Property>' + sLineBreak +
-//'    <Property Name="Importance" Type="3" Description="Важность" DescriptionLocalizeID="SYSRES_SBINTF.ROUTE_IMPORTANCE_PROP_DESCRIPTION" Visible="true" ParentProperty="" IsOut="false" ValueType="0" AllowedTypes="3" AllowedValueTypes="0;1;2">' + sLineBreak +
-//'      <ValueParamNames/>' + sLineBreak +
-//'      <PickValues>' + sLineBreak +
-//'        <PickValue Code="0" Name="Низкая" NameLocalizeID="SYSRES_SBINTF.LOW_IMPORTANCE_NAME"/>' + sLineBreak +
-//'        <PickValue Code="1" Name="Обычная" NameLocalizeID="SYSRES_SBINTF.NORMAL_IMPORTANCE_NAME"/>' + sLineBreak +
-//'        <PickValue Code="2" Name="Высокая" NameLocalizeID="SYSRES_SBINTF.HIGH_IMPORTANCE_NAME"/>' + sLineBreak +
-//'      </PickValues>' + sLineBreak +
-//'      <Value Value="Обычная"/>' + sLineBreak +
-//'    </Property>' + sLineBreak +
+'    <Property Name="Importance" Type="3" Description="Важность" DescriptionLocalizeID="SYSRES_SBINTF.ROUTE_IMPORTANCE_PROP_DESCRIPTION" Visible="true" ParentProperty="" IsOut="false" ValueType="0" AllowedTypes="3" AllowedValueTypes="0;1;2">' + sLineBreak +
+'      <ValueParamNames/>' + sLineBreak +
+'      <PickValues>' + sLineBreak +
+'        <PickValue Code="0" Name="Низкая" NameLocalizeID="SYSRES_SBINTF.LOW_IMPORTANCE_NAME"/>' + sLineBreak +
+'        <PickValue Code="1" Name="Обычная" NameLocalizeID="SYSRES_SBINTF.NORMAL_IMPORTANCE_NAME"/>' + sLineBreak +
+'        <PickValue Code="2" Name="Высокая" NameLocalizeID="SYSRES_SBINTF.HIGH_IMPORTANCE_NAME"/>' + sLineBreak +
+'      </PickValues>' + sLineBreak +
+'      <Value Value="Обычная"/>' + sLineBreak +
+'    </Property>' + sLineBreak +
 '  </Properties>' + sLineBreak +
 '</Settings>' + sLineBreak +
 '';
@@ -77,24 +78,17 @@ begin
 //    RegisterClass(TValueParamNames);
 
     LOutput.Position := 0;
-//    Writeln(ObjectBinaryToText(LOutput));
-    with TReader.Create(LOutput, 4096) do
-    try
-      LRoot := ReadRootComponent(nil) as TSettings;
-    finally
-      Free;
-    end;
+    Writeln(ObjectBinaryToText(LOutput));
+//    with TReader.Create(LOutput, 4096) do
+//    try
+//      LRoot := ReadRootComponent(nil) as TSettings;
+//    finally
+//      Free;
+//    end;
     Readln;
   finally
     LOutput.Free;
   end;
 end;
 
-begin
-  try
-    Test;
-  except
-    on E: Exception do
-      Writeln(E.ClassName, ': ', E.Message);
-  end;
 end.
